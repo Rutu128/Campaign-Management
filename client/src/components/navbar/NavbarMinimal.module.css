@@ -1,0 +1,41 @@
+.navbar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    width: 60px;
+    background-color: white; /* White background */
+    border-right: 1px solid #ccc;
+  }
+  
+  .navbarMain {
+    flex-grow: 1;
+  }
+  
+  .link {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px auto;
+    color: black; /* Black icons */
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .link:hover {
+    background-color: #f0f0f0; /* Light gray hover effect */
+  }
+  
+  .link[data-active="true"] {
+    background-color: black; /* Active link background */
+    color: white; /* Active link color */
+  }
+  
+  .tooltip {
+    color: black; /* Tooltip text color */
+    background-color: white; /* Tooltip background */
+    border: 1px solid #ccc;
+  }
+  
