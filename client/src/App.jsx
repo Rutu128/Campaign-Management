@@ -8,6 +8,7 @@ import { useContext } from "react";
 
 const App = () => {
   const { isLoggedIn } = useContext(AuthContext);
+
   return (
     <Routes>
       <Route path="/register" element={<SignUpPage />} />
@@ -15,8 +16,10 @@ const App = () => {
       {isLoggedIn && (
         <Route path="/" element={<UserLayout />}>
           <Route path="" element={<HomePage />} />
+          <Route path="/*" element={<HomePage />} />
         </Route>
       )}
+      <Route path="/*" element={<LoginPage />} />
     </Routes>
   );
 };

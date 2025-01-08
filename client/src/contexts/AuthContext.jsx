@@ -1,94 +1,109 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useCallback } from "react";
 import { getRequest, postRequest, baseUrl } from "@/utils/services";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const publicRoutes = ["/login", "/register"];
-    const currentPath = window.location.pathname;
-    const isPublicRoute = publicRoutes.includes(currentPath);
-
+  const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      setIsLoggedIn(true);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!user);
+
+  const checkLoginStatus = async () => {
+    setLoading(true);
+    try {
+      const response = await getRequest(`${baseUrl}/auth/ping`);
+      if (!response.error) {
+        setUser(response.data);
+        setIsLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(response.data));
+      } else {
+        toast.error(response.message);
+      }
+    } catch (err) {
+      console.error("Error checking login status:", err);
+    } finally {
       setLoading(false);
-    } else if (!isPublicRoute && !isLoggedIn) {
-      isLoggedInCheck();
-    } else {
+    }
+  };
+
+  const login = useCallback(async (email, password) => {
+    setLoading(true);
+    try {
+      const response = await postRequest(`${baseUrl}/auth/login`, {
+        email,
+        password,
+      });
+      if (!response.error) {
+        const userData = response.data.user;
+        setUser(userData);
+        setIsLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(userData));
+        toast.success("Logged in successfully!");
+        return true;
+      } else {
+        setError(response.message);
+        toast.error(response.message);
+        return false;
+      }
+    } catch (err) {
+      console.error("Error during login:", err);
+      toast.error("Login failed!");
+      return false;
+    } finally {
       setLoading(false);
     }
-  }, [isLoggedIn]);
+  }, []);
 
-  const isLoggedInCheck = async () => {
-    const response = await getRequest(`${baseUrl}/auth/ping`);
-    if (response.error) {
-      toast.error(response.message);
-    } else {
-      setIsLoggedIn(true);
-      setUser(response.data);
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    setLoading(false);
-  };
-
-  const login = async (email, password) => {
+  const register = useCallback(async (data) => {
     setLoading(true);
-    const response = await postRequest(`${baseUrl}/auth/login`, {
-      email,
-      password,
-    });
-    setLoading(false);
-    if (response.error) {
-      setError(response.message);
-      toast.error(response.message);
+    try {
+      const response = await postRequest(`${baseUrl}/auth/register`, data);
+      if (!response.error) {
+        const userData = response.data.user;
+        setUser(userData);
+        setIsLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(userData));
+        toast.success("Registered successfully!");
+        return true;
+      } else {
+        setError(response.message);
+        toast.error(response.message);
+        return false;
+      }
+    } catch (err) {
+      console.error("Error during registration:", err);
+      toast.error("Registration failed!");
       return false;
-    } else {
-      setUser(response.data.user);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      setIsLoggedIn(true);
-      toast.success("Logged in successfully!");
-      return true;
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const register = async (data) => {
+  const logout = useCallback(async () => {
     setLoading(true);
-    const response = await postRequest(`${baseUrl}/auth/register`, data);
-    setLoading(false);
-    if (response.error) {
-      setError(response.message);
-      toast.error(response.message);
-      return false;
-    } else {
-      setUser(response.data.user);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      setIsLoggedIn(true);
-      toast.success("Registered successfully!");
-      return true;
+    try {
+      const response = await getRequest(`${baseUrl}/auth/logout`);
+      if (!response.error) {
+        setUser(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem("user");
+        toast.success("Logged out successfully!");
+      } else {
+        setError(response.message);
+        toast.error(response.message);
+      }
+    } catch (err) {
+      console.error("Error during logout:", err);
+      toast.error("Logout failed!");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const logout = async () => {
-    setLoading(true);
-    const response = await getRequest(`${baseUrl}/auth/logout`);
-    setLoading(false);
-    if (response.error) {
-      setError(response.message);
-    } else {
-      setUser(null);
-      setIsLoggedIn(false);
-      localStorage.removeItem("user");
-    }
-  };
+  }, []);
 
   const value = {
     user,
@@ -98,7 +113,9 @@ const AuthContextProvider = ({ children }) => {
     register,
     logout,
     isLoggedIn,
+    checkLoginStatus,
   };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://ep-black-shadow-a51fxdiz.us-east-2.aws.neon.tech/cm</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="cm@localhost" uuid="75891b1b-95ad-4415-9909-bcb92d94bd32">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/cm</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
