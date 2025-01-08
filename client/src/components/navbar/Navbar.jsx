@@ -1,30 +1,24 @@
 import { useState } from "react";
-import {
-  IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconFingerprint,
-  IconGauge,
-  IconHome2,
-  IconLogout,
-  IconSettings,
-  IconSwitchHorizontal,
-  IconUser,
-} from "@tabler/icons-react";
-import {  Stack, Tooltip, UnstyledButton } from "@mantine/core";
+import { BiHome } from "react-icons/bi";
+import { BiUserCircle } from "react-icons/bi";
+import { BiFingerprint } from "react-icons/bi";
+import { MdOutlineSettings } from "react-icons/md";
+import { BiLogOut } from "react-icons/bi";
+import { Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import classes from "./NavbarMinimal.module.css";
 import { useNavigate } from "react-router-dom";
 
 function NavbarLink({ icon: Icon, label, active, onClick, expanded }) {
   return (
-    <Tooltip 
-      label={expanded ? "" : label} 
-      position="right" 
+    <Tooltip
+      label={expanded ? "" : label}
+      position="right"
       transitionProps={{ duration: 0 }}
       disabled={expanded}
     >
       <UnstyledButton
         onClick={onClick}
-        className={`${classes.link} ${expanded ? classes.expanded : ''}`}
+        className={`${classes.link} ${expanded ? classes.expanded : ""}`}
         data-active={active || undefined}
       >
         <Icon size={22} stroke={1.5} />
@@ -35,13 +29,10 @@ function NavbarLink({ icon: Icon, label, active, onClick, expanded }) {
 }
 
 const mockdata = [
-  { icon: IconHome2, label: "Home", route: "/home" },
-  { icon: IconGauge, label: "Dashboard", route: "/dashboard" },
-  { icon: IconDeviceDesktopAnalytics, label: "Analytics", route: "/analytics" },
-  { icon: IconCalendarStats, label: "Releases", route: "/releases" },
-  { icon: IconUser, label: "Account", route: "/account" },
-  { icon: IconFingerprint, label: "Security", route: "/security" },
-  { icon: IconSettings, label: "Settings", route: "/settings" },
+  { icon: BiHome, label: "Home", route: "/home" },
+  { icon: BiUserCircle, label: "Account", route: "/account" },
+  { icon: BiFingerprint, label: "Security", route: "/security" },
+  { icon: MdOutlineSettings, label: "Settings", route: "/settings" },
 ];
 
 export function Navbar() {
@@ -64,8 +55,8 @@ export function Navbar() {
   ));
 
   return (
-    <nav 
-      className={`${classes.navbar} ${expanded ? classes.expanded : ''}`}
+    <nav
+      className={`${classes.navbar} ${expanded ? classes.expanded : ""}`}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
@@ -80,13 +71,7 @@ export function Navbar() {
 
       <Stack className={classes.bottomStack} justify="end" gap={0}>
         <NavbarLink
-          icon={IconSwitchHorizontal}
-          label="Change account"
-          expanded={expanded}
-          onClick={() => navigate("/change-account")}
-        />
-        <NavbarLink
-          icon={IconLogout}
+          icon={BiLogOut}
           label="Logout"
           expanded={expanded}
           onClick={() => navigate("/logout")}
